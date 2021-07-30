@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id              :bigint           not null, primary key
+#  name            :string           not null
+#  password_digest :string           not null
+#  session_token   :string           not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#
 class User < ApplicationRecord
     validates :name, :password_digest, :session_token, presence: true
     validates :name, uniqueness: true
@@ -6,6 +17,11 @@ class User < ApplicationRecord
     attr_reader :password
 
     after_initialize :ensure_session_token
+
+    has_many :subs,
+        primary_key: :id,
+        foreign_key: :owner_id,
+        class_name: :Sub
 
     def self.find_by_credentials(name, password)
         user = User.find_by(name: name)
